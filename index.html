@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+
+  <!-- Makes the website adjust nicely on mobile, tablet, and desktop -->
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <title>Appointment System</title>
+
+  <!-- Lottie animation library (used to show animated success popup) -->
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+
+  <!-- Firebase libraries (used for login, register, database, analytics) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics-compat.js"></script>
+
+  <!-- Connecting this website to your Firebase project -->
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyApzn0_qb8H4oX7zKr7oMGkHwRT5MViqAQ",
+      authDomain: "mainaya.firebaseapp.com",
+      projectId: "mainaya",
+      storageBucket: "mainaya.firebasestorage.app",
+      messagingSenderId: "503091733358",
+      appId: "1:503091733358:web:b372dc7ff1769d4797577f",
+      measurementId: "G-K3NJQ1CG57"
+    };
+
+    /* Initializes Firebase with the above details */
+    firebase.initializeApp(firebaseConfig);
+
+    /* Tries to enable analytics (some browsers block it, so try-catch is used) */
+    try { firebase.analytics(); } catch(e){}
+  </script>
+
+  <!-- Linking CSS file (all styling like colors, layout etc.) -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Linking JS file (all functions like login(), register(), submitAppointment()) -->
+  <script src="script.js" defer></script>
+</head>
+<body>
+
+  <!-- Small logo button fixed at bottom; clicking it opens the credit popup -->
+  <div class="footer-logo">
+    <img src="logo.jpeg" alt="App Logo" onclick="openCredits()" style="cursor:pointer;">
+  </div>
+
+  <!-- ---------------- REGISTER PAGE ---------------- -->
+  <div class="page" id="registerPage">
+    <div class="center-card glass-card">
+      <h2 class="card-title">Create Account</h2>
+
+      <!-- Dropdown to choose Student or Coordinator -->
+      <select id="regRole" onchange="toggleRegisterForm()">
+        <option value="student">Student</option>
+        <option value="coordinator">Coordinator</option>
+      </select>
+
+      <!-- Student-specific input fields -->
+      <div id="studentFields" class="fields">
+        <input id="stuName" type="text" placeholder="Student Name *">
+        <input id="stuEmail" type="email" placeholder="College Email *">
+        <input id="stuDept" type="text" placeholder="Department *">
+        <input id="stuBranch" type="text" placeholder="Branch *">
+        <input id="stuYear" type="text" placeholder="Year *">
+        <input id="stuUSN" type="text" placeholder="USN No. *">
+      </div>
+
+      <!-- Coordinator-specific fields (hidden by default) -->
+      <div id="coordFields" class="fields" style="display:none;">
+        <input id="coName" type="text" placeholder="Coordinator Name *">
+        <input id="coEmail" type="email" placeholder="Coordinator Email *">
+        <input id="coDept" type="text" placeholder="Department *">
+        <input id="coUserId" type="text" placeholder="Coordinator ID *">
+      </div>
+
+      <!-- Common password field -->
+      <input id="regPass" type="password" placeholder="Password *">
+
+      <!-- Button that runs register() from script.js -->
+      <button class="btn primary full-btn" onclick="register()">Register</button>
+
+      <!-- Switch to login page -->
+      <p class="switch">
+        Already have an account?
+        <b onclick="showLogin()" style="cursor:pointer">Login</b>
+      </p>
+    </div>
+  </div>
+
+  <!-- ---------------- LOGIN PAGE ---------------- -->
+  <div class="page" id="loginPage" style="display:none;">
+    <div class="center-card glass-card">
+      <h2 class="card-title">Login</h2>
+
+      <input id="loginEmail" type="email" placeholder="Email ">
+      <input id="loginPass" type="password" placeholder="Password">
+
+      <!-- Button calls login() in script.js -->
+      <button class="btn primary full-btn" onclick="login()">Login</button>
+
+      <!-- Switch link to register page -->
+      <p class="switch">
+        Don't have an account?
+        <b onclick="showRegister()" style="cursor:pointer">Register</b>
+      </p>
+    </div>
+  </div>
+
+  <!-- ---------------- STUDENT DASHBOARD ---------------- -->
+  <div class="page dashboard glass-card" id="studentDashboard" style="display:none;">
+
+    <!-- Header with logout -->
+    <div class="dash-header">
+      <h2>Student Dashboard</h2>
+      <button class="btn small" onclick="logout()">Logout</button>
+    </div>
+
+    <div class="dash-body">
+
+      <!-- Left side: student profile info -->
+      <aside class="sidebar glass-card">
+        <h2>Your Profile</h2>
+        <!-- These will be filled by JS -->
+        <p id="s_name"></p>
+        <p id="s_email"></p>
+        <p id="s_dept"></p>
+        <p id="s_branch"></p>
+        <p id="s_year"></p>
+        <p id="s_usn"></p>
+      </aside>
+
+      <!-- Right side: appointment form + status -->
+      <main class="content">
+        <section class="glass-card">
+          <h3>Book Appointment</h3>
+          <!-- Purpose textbox -->
+          <input id="purpose" type="text" placeholder="Purpose">
+          <!-- Dropdown of available faculty (loaded by JS) -->
+          <select id="faculty"></select>
+          <!-- Date & time input -->
+          <input id="date" type="date">
+          <input id="time" type="time">
+          <!-- Calls submitAppointment() -->
+          <button class="btn primary full-btn" onclick="submitAppointment()">Submit</button>
+        </section>
+
+        <!-- Student sees status of their requests here -->
+        <section class="glass-card">
+          <h3>Your Appointment Status</h3>
+          <div id="studentMsg" class="scroll-box"></div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- ---------------- COORDINATOR DASHBOARD ---------------- -->
+  <div class="page dashboard glass-card" id="coordinatorDashboard" style="display:none;">
+
+    <div class="dash-header">
+      <h2>Coordinator Dashboard</h2>
+      <button class="btn small" onclick="logout()">Logout</button>
+    </div>
+
+    <!-- Shows coordinator’s info -->
+    <div class="glass-card co-profile-box">
+      <h3>Your Profile</h3>
+      <p id="c_name"></p>
+      <p id="c_email"></p>
+      <p id="c_dept"></p>
+    </div>
+
+    <!-- Appointment statistics -->
+    <div class="stats-container">
+      <div class="stat-box pending">Pending: <span id="stat_pending">0</span></div>
+      <div class="stat-box approved">Approved: <span id="stat_approved">0</span></div>
+      <div class="stat-box rejected">Rejected: <span id="stat_rejected">0</span></div>
+    </div>
+
+    <!-- Search + filter -->
+    <div class="search-filter">
+      <input id="searchInput" type="text" placeholder="Search by name or USN">
+      <select id="statusFilter">
+        <option value="all">All</option>
+        <option value="Pending">Pending</option>
+        <option value="Approved">Approved</option>
+        <option value="Rejected">Rejected</option>
+      </select>
+    </div>
+
+    <!-- List of student appointment requests -->
+    <main class="content">
+      <section class="glass-card">
+        <h3>Appointments Assigned To You</h3>
+        <div id="requestList" class="scroll-box"></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ---------------- DETAILS POPUP ---------------- -->
+  <div id="detailsPopup" class="overlay">
+    <div class="popup-box glass-card">
+      <h2>Student Details</h2>
+
+      <!-- All filled dynamically -->
+      <p id="d_name"></p>
+      <p id="d_usn"></p>
+      <p id="d_email"></p>
+      <p id="d_dept"></p>
+      <p id="d_branch"></p>
+      <p id="d_year"></p>
+      <p id="d_purpose"></p>
+      <p id="d_date_time"></p>
+
+      <!-- Approve / Reject buttons -->
+      <div class="popup-buttons">
+        <button class="btn primary" onclick="approveRequest()">Approve</button>
+        <button class="btn red" onclick="openRejectPopup()">Reject</button>
+        <button class="btn cancel" onclick="closeDetailsPopup()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ---------------- REJECT POPUP ---------------- -->
+  <div id="rejectPopup" class="overlay">
+    <div class="popup-box glass-card">
+      <h2>Suggest New Date & Time</h2>
+
+      <!-- Coordinator gives new date/time -->
+      <input id="suggestDate" type="date">
+      <input id="suggestTime" type="time">
+
+      <div class="popup-buttons">
+        <button class="btn primary" onclick="submitSuggestion()">Submit</button>
+        <button class="btn cancel" onclick="closeRejectPopup()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ---------------- SUCCESS POPUP ---------------- -->
+  <div id="successPopup" class="overlay">
+    <div class="popup-box glass-card" style="text-align:center;">
+      
+      <!-- Animated success animation -->
+      <lottie-player id="successLottie"
+        src="https://assets4.lottiefiles.com/packages/lf20_qp1q7mct.json"
+        background="transparent" speed="1"
+        style="width:140px;height:140px" loop>
+      </lottie-player>
+
+      <!-- Success message text -->
+      <h3 id="successText">Success</h3>
+    </div>
+  </div>
+
+  <!-- ---------------- CREDIT POPUP ---------------- -->
+  <div id="creditPopup" class="overlay">
+    <div class="popup-box glass-card" style="text-align:center;">
+      <h2 style="color:rgb(49, 47, 36);">Developed By</h2>
+      <p style="color:white;font-size:18px;">K Shanmai</p>
+      <p style="color:white;font-size:18px;">Nithin S Shetty</p>
+      <p style="color:white;font-size:18px;">Nitya M Angadi</p>
+    </div>
+  </div>
+
+</body>
+</html>
+

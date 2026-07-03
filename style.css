@@ -1,0 +1,139 @@
+/* ===== Base ===== */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg,#9e81dc,#6943bc,#301569, #1c0c4e);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+}
+
+.page { display: none; width: 100%; max-width: 1100px; }
+
+/* ===== GLASS CARD ===== */
+.glass-card {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255,255,255,0.25);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 14px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+  padding: 18px;
+}
+
+/* centered small card for login/register */
+.center-card { width: 100%; max-width:480px; margin: 10px auto; text-align: center; }
+.card-title { color: #fff; font-size: 22px; margin-bottom: 12px; }
+
+input, select {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 10px;
+  font-size: 15px;
+  background: #ffffff !important;
+  color: #000 !important;
+  border: 1px solid #ddd !important;
+}
+
+.btn { border: none; border-radius: 10px; padding: 10px 14px; cursor: pointer; font-weight: 600; }
+.primary { background: #e84b1b; color:white; }
+.small { padding: 8px 12px; background:#e84e1b; color:white; }
+.red { background: #855343; color:white; }
+.cancel { background:#333; color:white; }
+
+.dashboard { display:flex; flex-direction:column; gap:12px; width:100%; }
+.dash-header { display:flex; justify-content:space-between; align-items:center; color:rgb(23, 10, 10); }
+.dash-body { display:flex; gap:16px; flex-wrap:wrap; }
+.sidebar { width: 320px; min-width:220px; color:white; }
+.content { flex:1; min-width:280px; display:flex; flex-direction:column; gap:12px; }
+.scroll-box { max-height:300px; overflow:auto; background: rgba(255,255,255,0.06); padding:12px; border-radius:12px; border:1px solid rgba(255,255,255,0.2); }
+.request-card { background: rgba(255,255,255,0.18); padding: 12px; border-radius:12px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; border:1px solid rgba(255,255,255,0.25); }
+
+.badge { padding:6px 12px; border-radius:20px; font-weight:700; font-size:13px; }
+.badge.approved { background:#b6f0c6; color:#0a4d1a; }
+.badge.pending { background:#ffe9a3; color:#4a3900; }
+.badge.rejected { background:#ffb8b8; color:#5a0000; }
+.badge.withdrawn { background:#c7c7c7; color:#1e1e1e; }
+
+.overlay { position:fixed; inset:0; display:none; justify-content:center; align-items:center; background:rgba(0,0,0,0.55); z-index:50; }
+.popup-box { width:340px; padding:18px; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.page, .glass-card { animation: fadeIn 0.45s ease; }
+
+@media (max-width:880px){
+  .dash-body { flex-direction:column; }
+  .sidebar{ width:100%; }
+  .content{ width:100%; }
+}
+.footer-logo {
+  position: fixed;
+  bottom: 35px;
+  left: 97%;
+  transform: translateX(-97%);
+  z-index: 20;
+  opacity: 0.9;
+}
+
+.footer-logo img {
+  height: 60px;
+  width: auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+.co-profile-box {
+  margin-top: 10px;
+  color: white;
+}
+.stats-container {
+  display: flex;
+  gap: 12px;
+  margin: 15px 0;
+  flex-wrap: wrap;
+}
+.stat-box {
+  flex: 1;
+  min-width: 160px;
+  padding: 12px;
+  background: rgba(255,255,255,0.18);
+  border-radius: 12px;
+  font-weight: 600;
+  color: white;
+  text-align: center;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+.stat-box.pending { border-left: 6px solid #FFE066; }
+.stat-box.approved { border-left: 6px solid #4CAF50; }
+.stat-box.rejected { border-left: 6px solid #F44336; }
+
+.search-filter {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+#searchInput, #statusFilter {
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+}
+
+/* credit popup */
+#creditPopup .popup-box p {
+  font-size: 18px;
+  color: white;
+  margin: 6px 0;
+}
+#creditPopup h2 {
+  color: #fff;
+  margin-bottom: 10px;
+}
+#creditPopup button {
+  margin-top: 12px;
+}
