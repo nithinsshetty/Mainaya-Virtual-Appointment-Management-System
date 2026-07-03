@@ -38,7 +38,7 @@ All data is stored and managed using Firebase, eliminating the need for a separa
 ![View Requests](ViewRequest.png)
 
 ### Suggested Date & Time
-![Suggested Date Time](suggestedDatenTime.png)
+![Suggested Date Time](suggestedDateTime.png)
 
 ### Approve / Reject Requests
 ![Approve Reject](ApproveReject.png)
